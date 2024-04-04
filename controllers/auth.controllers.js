@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const {getConnected, runQuery} = require('../database/dataPool')
-const {createAccSyntax,signInSyntax,passwordResetSyntax}= require('../database/authSqlCommands');
+const {createAccSyntax,signInSyntax,passwordResetSyntax,exUserSyntax}= require('../database/authSqlCommands');
 const jwt = require('jsonwebtoken');
 const secret = "agrolink"
 
@@ -22,12 +22,21 @@ const connection = await getConnected();
    try{
     if(!Object.keys(USER_TYPE).includes(req.body.user_type)) {
         res.status(400).json({message: "Invalid UserType"})
+        return
     }
     if (!req.body.fullname || !req.body.email || !req.body.password) {
         res.status(400).json({message: "Invalid Credentials"})
+        return
     }
+    const existingUser = await runQuery(connection,exUserSyntax,[credentials.email])
+    if (existingUser[0]){
+        res.status(400).json({message: "Email already exists"})
+        return
+    }
+    
    const result =  await runQuery(connection ,createAccSyntax,[credentials.fullname,credentials.email,credentials.password,credentials.user_type])
-   res.status(200).json({message:"Account created successfully"})
+   console.log(result)
+   res.status(200).json({message:"Account created successfully",user_type:req.body.user_type,user_id:result.insertId})
    }
    catch(err){
    console.log(err)
