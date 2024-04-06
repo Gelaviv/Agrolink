@@ -57,7 +57,6 @@ const signin = async(req,res)=>{
    if (vfy){
     const token = jwt.sign(credentials,secret)
     res.status(200).json({message:result,token})
-    return
     console.log(token)
     return
     
