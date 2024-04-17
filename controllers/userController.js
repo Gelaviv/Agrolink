@@ -1,11 +1,19 @@
 const {getConnected, runQuery} = require('../database/dataPool');
 const {farmerData,consumerData}= require('../database/authSqlCommands');
-
+const {option,farmDataSchema, consDataSchema} = require("../utils/utilities")
 
 
 
 async function farmCredentials(req,res){
     const CATEGORY_TYPE = {farmer:'farmer',foodProcessor:'food processor'}
+
+    const validateResult = farmDataSchema.validate(req.body, option);
+    if (validateResult.error) {
+      return res.status(400).json({
+        error: validateResult.error.details[0].message,
+      });
+    }
+
 
     const credentials ={
         categories:req.body.categories,
@@ -18,7 +26,7 @@ async function farmCredentials(req,res){
         customers_id:parseInt(req.body.customers_id) 
     
     }
-
+console.log(req.body)
 const connection = await getConnected();
    try{
     if(!Object.values(CATEGORY_TYPE).includes(req.body.categories)) {
@@ -37,7 +45,7 @@ const connection = await getConnected();
         credentials.connectReq,
         credentials.customers_id])
 
-       res.status(200).json({message:"Farmer Data Saved Successfully"})
+       res.status(200).json({message:"Farmer Data Saved Successfully",farmer:result})
    }
         
    
@@ -47,7 +55,16 @@ const connection = await getConnected();
 }
 
 
+
+
 async function conCredentials(req,res){
+  const validateResult2 = consDataSchema.validate(req.body, option);
+  if (validateResult2.error) {
+    return res.status(400).json({
+      error: validateResult2.error.details[0].message,
+    });
+  }
+
 
     const credentials ={
         categories:req.body.categories,
@@ -68,7 +85,7 @@ const connection = await getConnected();
         credentials.phone,
         credentials.customers_id])
 
-       res.status(200).json({message:"Consumer Data Saved Successfully"})
+       res.status(200).json({message:"Consumer Data Saved Successfully",consumer:result})
    }
         
    

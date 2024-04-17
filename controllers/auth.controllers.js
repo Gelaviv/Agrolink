@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const {getConnected, runQuery} = require('../database/dataPool')
 const {createAccSyntax,signInSyntax,passwordResetSyntax,exUserSyntax}= require('../database/authSqlCommands');
+const {option,registerSchema,signInSchema} = require('../utils/utilities')
 const jwt = require('jsonwebtoken');
 const secret = "agrolink"
 
@@ -9,6 +10,14 @@ const USER_TYPE = {farmer:'farmer',consumer:'consumer'}
 async function createAccount(req,res){
     const bcSaltRounds = await bcrypt.genSalt(10);
     // console.log({bcSaltRounds, pass: req.body.password})
+
+    const validateResult = registerSchema.validate(req.body, option);
+    if (validateResult.error) {
+      return res.status(400).json({
+        error: validateResult.error.details[0].message,
+      });
+    }
+
 
     const credentials ={
         fullname :req.body.fullname,
@@ -24,10 +33,7 @@ const connection = await getConnected();
         res.status(400).json({message: "Invalid UserType"})
         return
     }
-    if (!req.body.fullname || !req.body.email || !req.body.password) {
-        res.status(400).json({message: "Invalid Credentials"})
-        return
-    }
+    
     const existingUser = await runQuery(connection,exUserSyntax,[credentials.email])
     if (existingUser[0]){
         res.status(400).json({message: "Email already exists"})
@@ -43,9 +49,17 @@ const connection = await getConnected();
    console.log(err)
    }   
 }
-   
+  
+
 
 const signin = async(req,res)=>{
+  const validateResult2 = signInSchema.validate(req.body, option);
+  if (validateResult2.error) {
+    return res.status(400).json({
+      error: validateResult2.error.details[0].message,
+    });
+  }
+
     const credentials = {
         email: req.body.email,
         password: req.body.password
@@ -71,6 +85,7 @@ const signin = async(req,res)=>{
    console.log(err)
    }   
 }
+
 
 
    async function resetPassword(req,res){

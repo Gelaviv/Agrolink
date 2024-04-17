@@ -12,7 +12,7 @@ const port = 5000
 
 //middlewares
 app.use(cors());    //should always be the first middleware to write
-
+app.use(express.static('uploads'))
 
 //use middleware to run route
 app.use(bodyParser.urlencoded({extended:false}));
