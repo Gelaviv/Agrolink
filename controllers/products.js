@@ -28,8 +28,6 @@ const upload =multer({
 
 
 
-
-
 async function uploadProd(req, res) {
 
   const validateResult = prodUploadSchema.validate(req.body, option);
