@@ -22,12 +22,12 @@ return new Promise((resolve,reject)=>{
         }
     
     })
-    connect.end(err => {
-        if (err) {
-          return console.log('error:' + err.message);
-        }
-        console.log('Close the database connection.');
-      });
+    // connect.end(err => {
+    //     if (err) {
+    //       return console.log('error:' + err.message);
+    //     }
+    //     console.log('Close the database connection.');
+    //   });
 })
 }
 
