@@ -3,7 +3,7 @@ const mySql = require('mysql2');
 
 //store database credentials
 const connect = mySql.createPool({
-    connectionLimit: 20,
+    connectionLimit: 10,
     host:process.env.HOST,
     user:process.env.DATABASE_USER,
     database:process.env.DATABASE,
@@ -22,7 +22,7 @@ return new Promise((resolve,reject)=>{
         }
     
     })
-    connection.end(err => {
+    connect.end(err => {
         if (err) {
           return console.log('error:' + err.message);
         }
